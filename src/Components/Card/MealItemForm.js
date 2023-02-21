@@ -8,7 +8,7 @@ const MealItemForm = (props) => {
   return (
     <form className={classes.form}>
       <Input />
-      <button type="button" onClick={() => ctx.addToCart(props.data.id)}>
+      <button type="button" onClick={() => ctx.addToCart(props.data)}>
         + Add
       </button>
     </form>

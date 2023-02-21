@@ -5,7 +5,8 @@ const CartContext = React.createContext({
   onActive: () => {},
   onDisable: () => {},
   addToCart: () => {},
-  amount: 0,
+  onAdd: () => {},
+  onRemove: () => {},
 });
 
 const DUMMY_MEALS = [
@@ -40,31 +41,37 @@ export const CartContextProvider = (props) => {
   const [mealData, setMealData] = useState(DUMMY_MEALS);
   const [cartMeals, setCartMeals] = useState([]);
 
-  const [amount, setAmount] = useState(0);
+  const addToCart = (item) => {
+    const mealIndex = cartMeals.findIndex((meal) => meal.id === item.id);
 
-  const addToCart = (id) => {
-    const findMealIndex = DUMMY_MEALS.findIndex((m) => m.id === id);
-    const findMeal = DUMMY_MEALS.find((meal) => meal.id === id);
-    // console.log(findMealIndex);
-
-    // setCartMeals((prevState) => {
-    //   return [...prevState, { findMeal }];
-    // });
-
-    if (cartMeals.map((item) => item === findMeal)) {
-      setAmount((prevState) => {
-        return (prevState += 1);
-      });
+    if (mealIndex === -1) {
       setCartMeals((prevState) => {
-        return [...prevState, { findMeal, amount: amount }];
+        return [...prevState, { ...item, amount: 1 }];
       });
     } else {
-      setCartMeals((prevState) => {
-        return [...prevState, { findMeal }];
-      });
+      const updatedCart = [...cartMeals];
+      updatedCart[mealIndex].amount += 1;
+      setCartMeals(updatedCart);
     }
-    // console.log(findMeal);
-    console.log(cartMeals);
+  };
+
+  const onAdd = (data) => {
+    const mealIndex = cartMeals.findIndex((meal) => meal.id === data.id);
+    const updatedCart = [...cartMeals];
+    updatedCart[mealIndex].amount += 1;
+    setCartMeals(updatedCart);
+  };
+
+  const onRemove = (data) => {
+    const mealIndex = cartMeals.findIndex((meal) => meal.id === data.id);
+    const updatedCart = [...cartMeals];
+    if (updatedCart[mealIndex].amount > 1) {
+      updatedCart[mealIndex].amount -= 1;
+      setCartMeals(updatedCart);
+    } else {
+      const filteredCart = updatedCart.filter((x) => x.id !== data.id);
+      setCartMeals(filteredCart);
+    }
   };
 
   const onActive = () => {
@@ -74,6 +81,7 @@ export const CartContextProvider = (props) => {
   const onDisable = () => {
     setIsModalActive(false);
   };
+
   return (
     <CartContext.Provider
       value={{
@@ -83,7 +91,8 @@ export const CartContextProvider = (props) => {
         mealData,
         addToCart,
         cartMeals,
-        amount,
+        onAdd,
+        onRemove,
       }}
     >
       {props.children}
