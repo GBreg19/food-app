@@ -5,13 +5,14 @@ import classes from "./HeaderCartButton.module.css";
 
 const HeaderCartButton = () => {
   const ctx = useContext(CartContext);
+  const bumped = ctx.isTrue ? classes.bump : "";
   return (
-    <button className={classes.button} onClick={ctx.onActive}>
+    <button className={`${classes.button} ${bumped}`} onClick={ctx.onActive}>
       <span className={classes.icon}>
         <CartIcon />
       </span>
       <span>Your Cart</span>
-      <span className={classes.badge}>0</span>
+      <span className={classes.badge}>{ctx.sumOfAmounts()}</span>
     </button>
   );
 };

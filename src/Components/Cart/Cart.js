@@ -6,6 +6,7 @@ import CartContext from "../../store/CartContext";
 
 const Cart = () => {
   const ctx = useContext(CartContext);
+  const fixedPrice = ctx.sumOfPrices().toFixed(2);
   return (
     <div className={`${classes["cart-items"]} ${modalClasses.modal}`}>
       <ul>
@@ -17,7 +18,7 @@ const Cart = () => {
         <span>
           <h1>Total Amount</h1>
         </span>
-        <span>$20</span>
+        <span>${fixedPrice}</span>
       </div>
       <div className={classes.actions}>
         <button className={classes["button--alt"]} onClick={ctx.onDisable}>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import classes from "../Components/UI/HeaderCartButton.module.css";
 
 const CartContext = React.createContext({
   isModalActive: false,
@@ -7,6 +8,12 @@ const CartContext = React.createContext({
   addToCart: () => {},
   onAdd: () => {},
   onRemove: () => {},
+  inputValue: 1,
+  onChangeHandler: () => {},
+  sumOfAmounts: () => {},
+  sumOfPrices: () => {},
+  isTrue: () => {},
+  setIsModalActive: () => {},
 });
 
 const DUMMY_MEALS = [
@@ -37,22 +44,42 @@ const DUMMY_MEALS = [
 ];
 
 export const CartContextProvider = (props) => {
-  const [isModalActive, setIsModalActive] = useState(true);
+  const [isModalActive, setIsModalActive] = useState(false);
   const [mealData, setMealData] = useState(DUMMY_MEALS);
   const [cartMeals, setCartMeals] = useState([]);
+  const [inputValue, setInputValue] = useState({});
+  const [isTrue, setIsTrue] = useState(true);
 
-  const addToCart = (item) => {
+  const addToCart = (e, item, amount) => {
+    e.preventDefault();
     const mealIndex = cartMeals.findIndex((meal) => meal.id === item.id);
 
     if (mealIndex === -1) {
       setCartMeals((prevState) => {
-        return [...prevState, { ...item, amount: 1 }];
+        return [...prevState, { ...item, amount: amount }];
       });
     } else {
       const updatedCart = [...cartMeals];
-      updatedCart[mealIndex].amount += 1;
+      updatedCart[mealIndex].amount += amount;
       setCartMeals(updatedCart);
     }
+
+    // Header Button bump animation
+    setIsTrue(false);
+    setTimeout(() => {
+      setIsTrue(true);
+    }, 100);
+  };
+
+  const sumOfAmounts = () => {
+    const cartAmounts = cartMeals.map((x) => x.amount);
+    return cartAmounts.reduce((x, y) => x + y, 0);
+  };
+
+  const sumOfPrices = () => {
+    let totalPrice = 0;
+    cartMeals.map((x) => (totalPrice += x.price * x.amount));
+    return totalPrice;
   };
 
   const onAdd = (data) => {
@@ -60,6 +87,12 @@ export const CartContextProvider = (props) => {
     const updatedCart = [...cartMeals];
     updatedCart[mealIndex].amount += 1;
     setCartMeals(updatedCart);
+
+    // Header Button bump animation
+    setIsTrue(false);
+    setTimeout(() => {
+      setIsTrue(true);
+    }, 100);
   };
 
   const onRemove = (data) => {
@@ -72,6 +105,12 @@ export const CartContextProvider = (props) => {
       const filteredCart = updatedCart.filter((x) => x.id !== data.id);
       setCartMeals(filteredCart);
     }
+
+    // Header Button bump animation
+    setIsTrue(false);
+    setTimeout(() => {
+      setIsTrue(true);
+    }, 100);
   };
 
   const onActive = () => {
@@ -86,6 +125,7 @@ export const CartContextProvider = (props) => {
     <CartContext.Provider
       value={{
         isModalActive,
+        setIsModalActive,
         onActive,
         onDisable,
         mealData,
@@ -93,6 +133,10 @@ export const CartContextProvider = (props) => {
         cartMeals,
         onAdd,
         onRemove,
+        inputValue,
+        sumOfAmounts,
+        sumOfPrices,
+        isTrue,
       }}
     >
       {props.children}
