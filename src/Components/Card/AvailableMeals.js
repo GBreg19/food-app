@@ -6,6 +6,23 @@ import CartContext from "../../store/CartContext";
 
 const AvailableMeals = () => {
   const ctx = useContext(CartContext);
+
+  if (ctx.isLoading) {
+    return (
+      <section className={classes.mealsLoading}>
+        <p>Loading...</p>
+      </section>
+    );
+  }
+
+  if (ctx.error) {
+    return (
+      <section className={classes.mealsError}>
+        <p>{ctx.error}</p>
+      </section>
+    );
+  }
+  
   return (
     <div className={classes.meals}>
       <Card>

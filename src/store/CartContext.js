@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import classes from "../Components/UI/HeaderCartButton.module.css";
+import axios from "axios";
 
 const CartContext = React.createContext({
   isModalActive: false,
@@ -16,39 +17,44 @@ const CartContext = React.createContext({
   setIsModalActive: () => {},
 });
 
-const DUMMY_MEALS = [
-  {
-    id: "m1",
-    name: "Sushi",
-    description: "Finest fish and veggies",
-    price: 22.99,
-  },
-  {
-    id: "m2",
-    name: "Schnitzel",
-    description: "A german specialty!",
-    price: 16.5,
-  },
-  {
-    id: "m3",
-    name: "Barbecue Burger",
-    description: "American, raw, meaty",
-    price: 12.99,
-  },
-  {
-    id: "m4",
-    name: "Green Bowl",
-    description: "Healthy...and green...",
-    price: 18.99,
-  },
-];
-
 export const CartContextProvider = (props) => {
   const [isModalActive, setIsModalActive] = useState(false);
-  const [mealData, setMealData] = useState(DUMMY_MEALS);
+  const [mealData, setMealData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
   const [cartMeals, setCartMeals] = useState([]);
   const [inputValue, setInputValue] = useState({});
   const [isTrue, setIsTrue] = useState(true);
+
+  const fetchMeals = async () => {
+    try {
+      const response = await axios(
+        "https://react-http-8a24f-default-rtdb.europe-west1.firebasedatabase.app/meals.json"
+      );
+      const data = response.data;
+      const loadedMeals = [];
+
+      for (const key in data) {
+        loadedMeals.push({
+          id: key,
+          name: data[key].name,
+          description: data[key].description,
+          price: data[key].price,
+        });
+      }
+      setMealData(loadedMeals);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error.message)
+      setError("An error occured: " + error.message);
+    }finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMeals();
+  }, []);
 
   const addToCart = (e, item, amount) => {
     e.preventDefault();
@@ -137,6 +143,8 @@ export const CartContextProvider = (props) => {
         sumOfAmounts,
         sumOfPrices,
         isTrue,
+        isLoading,
+        error,
       }}
     >
       {props.children}
