@@ -15,6 +15,7 @@ const CartContext = React.createContext({
   sumOfPrices: () => {},
   isTrue: () => {},
   setIsModalActive: () => {},
+  setCartMeals: () => {},
 });
 
 export const CartContextProvider = (props) => {
@@ -45,9 +46,9 @@ export const CartContextProvider = (props) => {
       setMealData(loadedMeals);
       setIsLoading(false);
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
       setError("An error occured: " + error.message);
-    }finally {
+    } finally {
       setIsLoading(false);
     }
   };
@@ -145,6 +146,7 @@ export const CartContextProvider = (props) => {
         isTrue,
         isLoading,
         error,
+        setCartMeals,
       }}
     >
       {props.children}
